@@ -6,5 +6,6 @@ public record EntityHit(
     int start,
     int end,
     double confidence,
-    String source // REGEX | DJL | OPENNLP
+    String category, // PII / PCI / PHI / OTHER
+    String source    // REGEX | HEURISTIC | OPENNLP | ...
 ) {}
