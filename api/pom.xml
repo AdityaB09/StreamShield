@@ -1,37 +1,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.5</version>
+    <relativePath/>
+  </parent>
 
   <groupId>com.streamshield</groupId>
   <artifactId>api</artifactId>
   <version>0.1.0</version>
   <name>streamshield-api</name>
+  <description>StreamShield privacy-preserving text transformer API</description>
 
   <properties>
     <java.version>21</java.version>
-    <spring.boot.version>3.3.5</spring.boot.version>
-
-    <!-- DJL + native versions -->
-    <djl.version>0.26.0</djl.version>
-    <pytorch.native.version>2.0.1</pytorch.native.version>
-    <maven.compiler.release>${java.version}</maven.compiler.release>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
-    <!-- Spring -->
+    <!-- Spring WebFlux + Actuator -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webflux</artifactId>
@@ -52,43 +43,7 @@
       <scope>runtime</scope>
     </dependency>
 
-    <!-- DJL core + HF tokenizers (currently not wired, but kept for future NER) -->
-    <dependency>
-      <groupId>ai.djl</groupId>
-      <artifactId>api</artifactId>
-      <version>${djl.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>ai.djl.huggingface</groupId>
-      <artifactId>tokenizers</artifactId>
-      <version>${djl.version}</version>
-    </dependency>
-
-    <!-- PyTorch engine -->
-    <dependency>
-      <groupId>ai.djl.pytorch</groupId>
-      <artifactId>pytorch-engine</artifactId>
-      <version>${djl.version}</version>
-    </dependency>
-
-    <!-- JNI adapter: NOTE the 2.0.1-0.26.0 version scheme -->
-    <dependency>
-      <groupId>ai.djl.pytorch</groupId>
-      <artifactId>pytorch-jni</artifactId>
-      <version>${pytorch.native.version}-${djl.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <!-- Native CPU binaries for Linux AMD64 so go-offline can cache them -->
-    <dependency>
-      <groupId>ai.djl.pytorch</groupId>
-      <artifactId>pytorch-native-cpu</artifactId>
-      <version>${pytorch.native.version}</version>
-      <classifier>linux-x86_64</classifier>
-      <scope>runtime</scope>
-    </dependency>
-
-    <!-- OpenNLP -->
+    <!-- OpenNLP for NER/POS -->
     <dependency>
       <groupId>org.apache.opennlp</groupId>
       <artifactId>opennlp-tools</artifactId>
@@ -102,14 +57,7 @@
       <version>9.11.1</version>
     </dependency>
 
-    <!-- SnakeYAML for regexes.yml -->
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>2.3</version>
-    </dependency>
-
-    <!-- Utils (versions from Spring BOM where applicable) -->
+    <!-- JSON / text utils -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
@@ -119,27 +67,30 @@
       <artifactId>commons-text</artifactId>
       <version>1.11.0</version>
     </dependency>
+
+    <!-- YAML for regex config -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+    </dependency>
+
+    <!-- Optional tests -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
+    <!-- jar name: target/api.jar -->
     <finalName>api</finalName>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
-        <configuration>
-          <release>${maven.compiler.release}</release>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <image>
-            <skip>true</skip>
-          </image>
+          <mainClass>com.streamshield.StreamShieldApplication</mainClass>
         </configuration>
       </plugin>
     </plugins>
